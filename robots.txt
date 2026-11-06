@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Sitemap: https://www.bioacoustics.cloud/sitemap.xml
+Host: https://bioacoustics.cloud
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+Agentmap: https://www.bioacoustics.cloud/.well-known/ai-catalog.json

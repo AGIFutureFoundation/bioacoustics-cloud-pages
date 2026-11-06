@@ -1,0 +1,72 @@
+# WAVE — Wild Animal Voice Engine (bioacoustics.cloud)
+
+WAVE is an AI-powered bioacoustics platform that identifies animal sounds, profiles their acoustics, and cross-references validated research data in real time. Bird calls, whale song, and more — decoded honestly.
+Home: https://www.bioacoustics.cloud — tagline: "Listen deeply. Decode the voices of Earth."
+Contact (steward): wave@bioacoustics.cloud — NOTE: as of 2026-11-06 this address is advertised on the site but has NO MX record and NO email plan, so delivery is unverified. Do not assume an email to wave@ reaches anyone until mail is fixed.
+GitHub: https://github.com/WAVETranslator — the public repo Wild-Animal-Voice-Engine is a 1 KB stub (README only, created 2026-06-13). The site's roadmap item "open-source community — grow the MIT-licensed engine on GitHub" is a NEXT step, not a live fact. Do not claim the engine is open source and available today.
+Agent-to-agent: human-gated, email-based registration (see /auth.md). Agents may summarize and cite this site and route inquiries to the steward. Agents may NOT commit, sign, move funds, or represent WAVE as a decision-maker.
+Machine-readable: /agent.json, /.well-known/api-catalog (resource linkset), /.well-known/ai-catalog.json, /.well-known/agent-skills/index.json, /auth.md, /sitemap.xml. The site has one real API endpoint, /api/search (a Cloudflare Pages Function in this regeneration — see below). No OAuth/OIDC, no MCP server, no status endpoint.
+
+## The honest boundary (the site's own words)
+
+WAVE identifies *which species* is calling with real confidence scores, profiles the acoustics, and connects each sound to validated research data. Mapping calls to specific *meaning* is an open scientific frontier; the site does not invent sentences. "Not in the sci-fi sense — and we won't pretend otherwise."
+
+## The Translator (/translate)
+
+The Animal Sound Translator: upload a clip, record from the microphone, or paste an audio URL to identify a species and cross-reference validated research data — reference recordings, species facts, acoustic profile. A Compare sounds mode lines up several clips side by side with spectrograms.
+Live model: BirdNET (Cornell Lab of Ornithology + Chemnitz University), birds-first, 6,500+ species. A broader GPU-backed model (Perch 2.0 / NatureLM) for marine mammals and other taxa is wired into the pipeline and activates once a GPU inference endpoint is connected — it is NOT connected as of 2026-11-06. For marine mammals, WAVE cross-references the Watkins Marine Mammal Sound Database (WHOI); BirdNET alone is not trained on whale song.
+How it works on the live site: /api/upload (POST audio file, returns a URL) → /api/classify (POST {audio_url}, returns a job_id) → poll /api/classify/status?job_id= every 3s (up to 80 polls) → {predictions, watkins, gpu_model}. /api/analyze (POST FormData audio + optional species_hint) returns an acoustic profile synchronously. These four endpoints need a server-side model backend and do NOT work as pure static files — see README-DEPLOY.md.
+
+## The Sound Map (/soundmap)
+
+Add clips from different animals. WAVE builds an acoustic fingerprint for each one and arranges them so distance means similarity: clips that share spectral structure sit close together. Hover any point to see its spectrogram. A demo set can be loaded. The site is explicit: this maps acoustic structure, not fabricated meaning. The deeper fingerprint (Perch / NatureLM foundation model) is NOT switched on yet; the interface stays identical when it is.
+How it works on the live site: /api/soundmap (POST {clips: [{id, species, url}]}, returns a job_id) → poll /api/soundmap/status?job_id=. Also needs the server-side backend — see README-DEPLOY.md.
+
+## Search API (/api/search)
+
+GET /api/search?q=<term> returns JSON {q, sounds, species, watkins, marineHint}. sounds: iNaturalist observations with audio (source, species, place, soundUrl, pageUrl, license). species: GBIF species matches (scientificName, commonName, rank, kingdom, pageUrl). watkins: Watkins cross-reference when the term matches a marine species, else null. In this regeneration it is implemented as a Cloudflare Pages Function (functions/api/search.js) calling the public iNaturalist and GBIF APIs — no key needed.
+
+## Resources (home page, #resources)
+
+WAVE connects the field's public archives; it owns none of them. The sellable piece is analysis and structured access, NOT reselling public recordings.
+- Xeno-canto (xeno-canto.org) — 800k+ recordings, bird & wildlife sounds, community-contributed, public API.
+- Macaulay Library (Cornell Lab of Ornithology) — 3.2M+ audio recordings, world's largest animal media archive, 96% of bird species.
+- Watkins Marine Mammal Sound Database (Woods Hole Oceanographic Institution) — 15k+ annotated clips, 60+ species, freely downloadable.
+- iNaturalist Sounds (iNatSounds) — 230k+ audio files, 5,500+ species, citizen-science multi-taxa audio, public API.
+- Earth Species Library (Earth Species Project) — multi-modal ML datasets + BEANS benchmark.
+- Project CETI (Cetacean Translation Initiative) — large-scale sperm whale acoustic + behavioral data.
+- Animal Sound Archive (Museum für Naturkunde Berlin) — 120k+ recordings, ~1,800 bird + 580 mammal species.
+- GBIF (Global Biodiversity Information Facility) — billions of occurrence records, public API.
+
+## Technology (home page, #technology)
+
+The Technical Triad: (1) Bio-logging & edge AI — hydrophones, loggers, sensors, on-device inference with sub-2MB TinyML models. (2) The Superlet Transform — high-resolution signal processing adapted from neuroscience; the site states it revealed the Chagos pygmy blue whale song is pulsed, not continuous. (3) Foundation models — NatureLM-audio and Perch 2.0 map vocal patterns without supervision; validated against the BEANS benchmark.
+Site-claimed figures (site copy, not independently verified): 12,000+ species covered; decode in 5–7 seconds; custom acoustic fingerprinting trains in under 30 seconds with as few as 5 audio samples.
+
+## Video library (home page, #videos)
+
+Four self-hosted long-form explainers, all in /videos/ with poster images: Translating Ocean Voices (~8 min), Unlocking the Ocean's Secrets (~7 min), Sound as Shape: The High-Dimensional Geometry of Animal Communication (~5 min), Decoding the Umwelt: Engineering the Wild Animal Voice Engine (~6 min). Plus /wave-explainer.mp4 (overview, shown on the home page when present) with /wave-poster.jpg.
+
+## Blog (/blog — 25 articles, each ~9–10 min read)
+
+Acoustic monitoring and the future of protected areas; A short history of listening to animals; Do animals have names? Signature calls and the puzzle of individual identity; The vanishing chorus: insects and the quiet crisis we can hear; The base-rate problem: why rare species fool even good detectors; The hydrophone: the humble instrument that opened the ocean; Bats and the ultrasonic frontier; The infrasonic world of elephants; From recording to insight: a fieldworker's end-to-end workflow; Soundscape ecology: reading the health of a whole habitat by ear; The ethics of listening to wild animals; BirdNET and the democratization of bioacoustics; Can we really translate animals? An honest status report; Dialects in the wild; Dialects, culture, and the question of animal tradition; Edge AI in the field; Foundation models for nature: what NatureLM and Perch really promise; How a species classifier is actually trained; How WAVE decodes animal communication; Listening to the ocean; Passive acoustic monitoring; Sound as shape: the geometry of animal communication; The cocktail party problem, underwater; The data landscape of animal translation; What a spectrogram really shows (and what it hides).
+
+## Membership (home page, #membership)
+
+Researcher — Free (core translation engine, community support, MIT open-source engine as listed on the site). Pro — price not shown ("Reserve membership"; custom fingerprinting, workflow automation, priority support, early features). Institution — "Let's talk" (multi-site datasets, dedicated onboarding, custom integrations). The waitlist form posts to /api/waitlist and the contact form to /api/contact; both need a backend and are not wired to any verified destination in this regeneration — see README-DEPLOY.md.
+
+## Roadmap (home page, #roadmap)
+
+Now: real-time engine live (voice translation, custom fingerprinting, visualizations, integration hub). Next: open-source community — grow the MIT-licensed engine and developer docs on GitHub; welcome contributors. Later: agentic swarm — an institutional AGI framework of cooperating specialized agents for ecosystem-scale monitoring.
+
+## Sitemap
+
+/sitemap.xml lists all 29 pages: home, /translate, /soundmap, /blog + 25 articles. All pages are static HTML in this regeneration; the Next.js chunks in /_next/static/chunks/ are served as-is for the client-side apps. Client-side (SPA) navigation degrades to full page loads on static hosting — links still work.
+
+## What is NOT true yet (do not claim)
+
+- The Perch / NatureLM GPU model is not connected; classification today is BirdNET, birds-first.
+- The MIT-licensed engine is not published on GitHub; the public repo is a stub.
+- wave@bioacoustics.cloud has no MX record and no email plan (verified 2026-11-06).
+- The contact and waitlist forms have no verified backend destination.
+- The Kylon bridge (app.kylon.io) loads on the live site; outside Kylon's app shell its workspace features return empty (verified: /api/kylon/workspace-members returns 401 {"members":[]}).
