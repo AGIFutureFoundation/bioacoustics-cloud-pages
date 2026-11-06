@@ -1,0 +1,63 @@
+{
+  "agent_protocol": "PROPOSED, human-gated, receipt-required",
+  "capabilities": [
+    "summarize",
+    "cite",
+    "route_inquiry"
+  ],
+  "not_capabilities": [
+    "commit",
+    "transfer_funds",
+    "sign",
+    "represent_organization",
+    "enact_doctrine"
+  ],
+  "contact": "wave@bioacoustics.cloud",
+  "contact_note": "Steward address as published on the site. As of 2026-11-06 it has NO MX record and NO email plan, so delivery is unverified.",
+  "description": "WAVE (Wild Animal Voice Engine) is an AI-powered bioacoustics platform that identifies animal sounds, profiles their acoustics, and cross-references validated research data in real time.",
+  "discovery": {
+    "ai_catalog": "/.well-known/ai-catalog.json",
+    "api_catalog": "/.well-known/api-catalog",
+    "agent_skills": "/.well-known/agent-skills/index.json",
+    "auth": "/auth.md",
+    "llms": "/llms.txt",
+    "sitemap": "/sitemap.xml"
+  },
+  "host": "bioacoustics.cloud",
+  "model_status": {
+    "live_predictor": "BirdNET (Cornell Lab of Ornithology + Chemnitz University), birds-first, 6500+ species",
+    "gpu_model": "Perch 2.0 / NatureLM \u2014 wired into the pipeline, NOT connected; activates once a GPU inference endpoint is connected (site FAQ, verified 2026-11-06)",
+    "soundmap_foundation_model": "Not switched on yet; interface identical when it is"
+  },
+  "name": "WAVE \u2014 Wild Animal Voice Engine",
+  "pages": {
+    "blog": "/blog/",
+    "blog_articles": 25,
+    "home": "/",
+    "soundmap": "/soundmap/",
+    "translate": "/translate/"
+  },
+  "search_api": {
+    "endpoint": "/api/search?q=<term>",
+    "note": "Cloudflare Pages Function in this regeneration; proxies the public iNaturalist and GBIF APIs. Returns {q, sounds, species, watkins, marineHint}.",
+    "returns": "sounds from iNaturalist, species from GBIF, watkins cross-reference or null"
+  },
+  "virtuals_agent": {
+    "acp": "https://app.virtuals.io/acp/agents/019ebb48-678c-77bc-8d51-0ff3c4caa2bb",
+    "public": "https://app.virtuals.io/virtuals/86719",
+    "site": "https://wave.agifuturefoundation.org",
+    "token": "$WAVE"
+  },
+  "what_agents_may_do": [
+    "Summarize and cite content published on this site, with sources.",
+    "Route inquiries to a human steward (via the contact above).",
+    "Draft material for a human to review, correct, and decide on."
+  ],
+  "what_agents_may_not_do": [
+    "Present an agent draft or proposal as a human decision.",
+    "Sign any legal document, contract, or filing.",
+    "Move funds or spend money.",
+    "Represent WAVE to regulators, banks, or the public as a decision-maker.",
+    "Claim the GPU model, the open-source engine, or wave@ delivery as live \u2014 all three are unverified or not yet live (see llms.txt)."
+  ]
+}

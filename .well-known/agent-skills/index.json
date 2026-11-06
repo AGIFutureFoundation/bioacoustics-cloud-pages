@@ -1,0 +1,24 @@
+{
+  "skills": [
+    {
+      "name": "read_site_facts",
+      "path": "/.well-known/agent-skills/read-site-facts.md",
+      "sha256": "ad23cbd6179bfae4f36a34cdd657ae34eed4592d7cc26b6be6062e26057750e6"
+    },
+    {
+      "name": "identify_species",
+      "path": "/.well-known/agent-skills/identify-species.md",
+      "sha256": "0dd5f13d9aee8fead50467a6b2189312f92e65851c73b50b4cf78a7790ceb88f"
+    },
+    {
+      "name": "acoustic_fingerprint",
+      "path": "/.well-known/agent-skills/acoustic-fingerprint.md",
+      "sha256": "1d6436f4264a86e6e7fd790429a66fa0059fb455cb9c59d1762739cdd7eefb20"
+    },
+    {
+      "name": "search_archives",
+      "path": "/.well-known/agent-skills/search-archives.md",
+      "sha256": "698db5f5970e329265d90b872f897db95b35e89f9eb4cd31003c4b2820702188"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "entries": [
+    {
+      "displayName": "WAVE \u2014 home",
+      "identifier": "urn:air:bioacoustics.cloud:page:home",
+      "representativeQueries": [
+        "What is WAVE?",
+        "What does the Wild Animal Voice Engine do?",
+        "How do I contact WAVE?"
+      ],
+      "type": "text/html",
+      "url": "https://www.bioacoustics.cloud/"
+    },
+    {
+      "displayName": "Animal Sound Translator",
+      "identifier": "urn:air:bioacoustics.cloud:page:translate",
+      "representativeQueries": [
+        "How do I identify an animal sound?",
+        "What model powers species prediction?",
+        "How do I analyze my own recording?"
+      ],
+      "type": "text/html",
+      "url": "https://www.bioacoustics.cloud/translate/"
+    },
+    {
+      "displayName": "Sound Map",
+      "identifier": "urn:air:bioacoustics.cloud:page:soundmap",
+      "representativeQueries": [
+        "How does the Sound Map arrange clips?",
+        "What is acoustic fingerprinting?",
+        "How do I compare sounds from different species?"
+      ],
+      "type": "text/html",
+      "url": "https://www.bioacoustics.cloud/soundmap/"
+    },
+    {
+      "displayName": "Blog \u2014 25 articles",
+      "identifier": "urn:air:bioacoustics.cloud:page:blog-hub",
+      "representativeQueries": [
+        "What articles explain BirdNET?",
+        "Can animals really be translated?",
+        "What is the base-rate problem?"
+      ],
+      "type": "text/html",
+      "url": "https://www.bioacoustics.cloud/blog/"
+    },
+    {
+      "displayName": "llms.txt \u2014 site guide for language models",
+      "identifier": "urn:air:bioacoustics.cloud:document:llms-txt",
+      "representativeQueries": [
+        "Summarize the WAVE site for an agent",
+        "Is the GPU model connected?",
+        "What data sources does WAVE use?"
+      ],
+      "type": "text/markdown",
+      "url": "https://www.bioacoustics.cloud/llms.txt"
+    },
+    {
+      "displayName": "agent.json \u2014 machine-readable agent protocol",
+      "identifier": "urn:air:bioacoustics.cloud:document:agent-json",
+      "representativeQueries": [
+        "What may agents do on this site?",
+        "How do agents register with WAVE?",
+        "What is the WAVE search API?"
+      ],
+      "type": "application/json",
+      "url": "https://www.bioacoustics.cloud/agent.json"
+    },
+    {
+      "displayName": "sitemap.xml \u2014 all pages on this site",
+      "identifier": "urn:air:bioacoustics.cloud:document:sitemap",
+      "representativeQueries": [
+        "List every page on the WAVE site",
+        "Where are the blog articles?",
+        "Where is the Translator?"
+      ],
+      "type": "application/xml",
+      "url": "https://www.bioacoustics.cloud/sitemap.xml"
+    }
+  ],
+  "host": {
+    "displayName": "WAVE \u2014 Wild Animal Voice Engine",
+    "identifier": "did:web:bioacoustics.cloud"
+  },
+  "specVersion": "1.0"
+}
