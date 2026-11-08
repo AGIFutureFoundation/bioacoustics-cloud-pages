@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="420" viewBox="0 0 680 420" role="img" aria-labelledby="t d">
+<title id="t">Acoustic enrichment on degraded reefs: fish abundance and species richness vs controls</title>
+<desc id="d">Grouped bar chart. After 40 days, acoustically enriched reef patches had twice the fish abundance and 50 percent greater species richness than unmanipulated controls. Gordon et al. 2019, Nature Communications 10:5414.</desc>
+<rect width="680" height="420" fill="#ffffff"/>
+<text x="30" y="30" font-family="sans-serif" font-size="17" font-weight="bold" fill="#0b2a33">What playing healthy reef sound did (Gordon et al. 2019)</text>
+<text x="30" y="52" font-family="sans-serif" font-size="12" fill="#4a6570">Degraded reef patches, 40-day experiment, northern Great Barrier Reef. Control = 1.0×.</text>
+<!-- Group 1: fish abundance. Baseline y=170. Scale 55px per 1.0x. -->
+<text x="30" y="118" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0b2a33">Fish abundance</text>
+<rect x="250" y="115" width="70" height="55" fill="#94a3b8"/>
+<rect x="350" y="60" width="70" height="110" fill="#0e7490"/>
+<text x="250" y="188" font-family="sans-serif" font-size="12" fill="#0b2a33">Control 1.0×</text>
+<text x="350" y="188" font-family="sans-serif" font-size="12" fill="#0b2a33">Enriched 2.0×</text>
+<text x="440" y="120" font-family="sans-serif" font-size="13" fill="#0e7490">Twice as many fish</text>
+<line x1="230" y1="170" x2="560" y2="170" stroke="#0b2a33" stroke-width="1"/>
+<!-- Group 2: species richness. Baseline y=330. Same scale. -->
+<text x="30" y="278" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0b2a33">Species richness</text>
+<rect x="250" y="275" width="70" height="55" fill="#94a3b8"/>
+<rect x="350" y="247" width="70" height="83" fill="#22a06b"/>
+<text x="250" y="348" font-family="sans-serif" font-size="12" fill="#0b2a33">Control 1.0×</text>
+<text x="350" y="348" font-family="sans-serif" font-size="12" fill="#0b2a33">Enriched 1.5×</text>
+<text x="440" y="280" font-family="sans-serif" font-size="13" fill="#15803d">50% more species</text>
+<line x1="230" y1="330" x2="560" y2="330" stroke="#0b2a33" stroke-width="1"/>
+<text x="30" y="388" font-family="sans-serif" font-size="11" fill="#4a6570">Source: Gordon, Radford, Davidson et al. (2019), “Acoustic enrichment can enhance fish community development</text>
+<text x="30" y="404" font-family="sans-serif" font-size="11" fill="#4a6570">on degraded coral reef habitat”, Nature Communications 10:5414. doi:10.1038/s41467-019-13186-2. Six-week field experiment.</text>
+</svg>
