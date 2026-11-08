@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Archive explorer — WAVE</title>
+<meta name="description" content="Browse the eight public sound archives WAVE links to. Every archive is a public resource linked, not owned, by WAVE.">
+<style>
+/* WAVE archive explorer — staged component. Brand matches the staged WAVE homepage:
+   deep-ocean dark, cyan/teal accents, system font stack, zero external requests. */
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --bg:#05121a; --bg2:#071c26; --panel:#0c2836; --panel2:#04141c;
+  --border:#1c3f4e; --border2:#164a5c;
+  --ink:#eaf6f7; --muted:#a9c6cd; --dim:#8fa9b0;
+  --cyan:#22d3ee; --teal:#5eead4; --focus:#7dd3fc;
+  --radius:16px;
+}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:17px;line-height:1.6;overflow-x:hidden}
+a{color:var(--cyan)}
+a:hover{color:var(--teal)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:4px}
+.wave-arch{max-width:1140px;margin:0 auto;padding:32px 24px 48px}
+.wave-arch h2{font-size:clamp(26px,4vw,36px);line-height:1.2;margin:0 0 12px;font-weight:800}
+.wave-arch .lede{color:var(--muted);font-size:18px;max-width:720px;margin:0 0 8px}
+.wave-arch .own-note{color:var(--dim);font-size:15px;max-width:720px;margin:0 0 28px}
+.wave-arch .own-note strong{color:var(--teal)}
+.controls{display:flex;flex-direction:column;gap:16px;margin-bottom:24px}
+.search-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.search-row label{font-weight:700}
+.search-row input[type="search"]{
+  flex:1 1 280px;min-height:48px;padding:12px 16px;border-radius:999px;
+  border:1px solid var(--border2);background:var(--panel2);color:var(--ink);
+  font:inherit;font-size:16px}
+.search-row input[type="search"]::placeholder{color:var(--dim)}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip-row .chip-label{font-size:14px;font-weight:700;color:var(--muted);margin-right:4px}
+.chip{
+  min-height:44px;padding:10px 16px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--border2);background:var(--panel);color:var(--ink);
+  font:inherit;font-size:15px}
+.chip:hover{border-color:var(--cyan)}
+.chip[aria-pressed="true"]{background:var(--cyan);border-color:var(--cyan);color:#022;font-weight:700}
+.result-count{color:var(--muted);font-size:15px;margin:0 0 20px}
+.result-count strong{color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card h3{margin:0;font-size:19px;line-height:1.3}
+.card h3 a{color:var(--ink);text-decoration:none}
+.card h3 a:hover{color:var(--cyan);text-decoration:underline}
+.card p{margin:0;color:var(--muted);font-size:15px}
+.card .tag{color:var(--cyan);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.card .figure{color:var(--ink);font-weight:700;font-size:16px}
+.card .owner{color:var(--dim);font-size:14px}
+.card .card-link{margin-top:auto;padding-top:8px;font-weight:700;font-size:15px;min-height:44px;display:inline-flex;align-items:center}
+.card .ext-note{color:var(--dim);font-size:13px}
+.empty{border:1px dashed var(--border2);border-radius:var(--radius);padding:32px;text-align:center;color:var(--muted)}
+.empty[hidden]{display:none}
+.empty .btn-clear{
+  margin-top:16px;min-height:48px;padding:12px 24px;border-radius:999px;cursor:pointer;
+  background:linear-gradient(120deg,var(--cyan),#0ea5a4);color:#022;font-weight:700;font-size:16px;border:0}
+.data-note{border-left:3px solid var(--cyan);background:rgba(34,211,238,.07);border-radius:10px;
+  padding:14px 18px;color:#cfe3e7;font-size:15px;line-height:1.6;margin-top:28px;max-width:820px}
+.data-note p{margin:0}
+@media (max-width:1020px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:680px){
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .wave-arch{padding:24px 18px 40px}
+  body{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<section class="wave-arch" aria-labelledby="wave-arch-title">
+  <h2 id="wave-arch-title">The public archives</h2>
+  <p class="lede">Eight public collections of animal sound and biodiversity data that WAVE links to. Search by name, or filter by what each archive holds and how it can be accessed.</p>
+  <p class="own-note"><strong>Linked, not owned:</strong> every archive below is a public resource run by its own organisation. WAVE links to these collections; it does not own them, and it does not resell their recordings.</p>
+
+  <div class="controls">
+    <div class="search-row">
+      <label for="arch-search">Search archives</label>
+      <input type="search" id="arch-search" placeholder="Try “whale”, “birds”, or “Berlin”…" autocomplete="off" aria-describedby="arch-count">
+    </div>
+    <div class="chip-row" role="group" aria-label="Filter by what the archive holds">
+      <span class="chip-label" id="holds-label">Holds:</span>
+      <button type="button" class="chip" data-filter="holds" data-value="all" aria-pressed="true">All</button>
+      <button type="button" class="chip" data-filter="holds" data-value="birds" aria-pressed="false">Birds</button>
+      <button type="button" class="chip" data-filter="holds" data-value="marine" aria-pressed="false">Marine</button>
+      <button type="button" class="chip" data-filter="holds" data-value="multi-taxa" aria-pressed="false">Multi-taxa</button>
+      <button type="button" class="chip" data-filter="holds" data-value="data" aria-pressed="false">Data &amp; records</button>
+    </div>
+    <div class="chip-row" role="group" aria-label="Filter by access type">
+      <span class="chip-label" id="access-label">Access:</span>
+      <button type="button" class="chip" data-filter="access" data-value="all" aria-pressed="true">All</button>
+      <button type="button" class="chip" data-filter="access" data-value="Public API" aria-pressed="false">Public API</button>
+      <button type="button" class="chip" data-filter="access" data-value="Open dataset" aria-pressed="false">Open dataset</button>
+      <button type="button" class="chip" data-filter="access" data-value="Browse / request" aria-pressed="false">Browse / request</button>
+    </div>
+  </div>
+
+  <p class="result-count" id="arch-count" role="status" aria-live="polite"></p>
+
+  <div class="grid" id="arch-grid"></div>
+
+  <div class="empty" id="arch-empty" hidden>
+    <p><strong>No archives match that search.</strong><br>Try a different word, or clear the filters to see all eight archives.</p>
+    <button type="button" class="btn-clear" id="arch-clear">Clear search and filters</button>
+  </div>
+</section>
+
+<script>
+(function () {
+  "use strict";
+
+  /* Data: names, descriptions, figures and URLs exactly as published on the
+     WAVE homepage (bioacoustics.cloud). Archives are public resources WAVE
+     links to — none is owned by WAVE. */
+  var ARCHIVES = [
+    {
+      name: "Xeno-canto",
+      url: "https://xeno-canto.org/",
+      access: "Public API",
+      owner: "Xeno-canto Foundation",
+      figure: "~1,040,000 recordings (November 2026)",
+      holds: ["birds", "multi-taxa"],
+      blurb: "Bird & wildlife sounds, global, community-contributed."
+    },
+    {
+      name: "Macaulay Library",
+      url: "https://www.macaulaylibrary.org/",
+      access: "Browse / request",
+      owner: "Cornell Lab of Ornithology",
+      figure: "3.2M+ audio recordings (as of November 2026)",
+      holds: ["birds"],
+      blurb: "The world\u2019s largest animal media archive; 96% of bird species."
+    },
+    {
+      name: "Watkins Marine Mammal Sound Database",
+      url: "https://cis.whoi.edu/science/B/whalesounds/index.cfm",
+      access: "Open dataset",
+      owner: "Woods Hole Oceanographic Institution",
+      figure: "15k+ annotated clips, 60+ species",
+      holds: ["marine"],
+      blurb: "Marine mammal vocalizations, freely downloadable."
+    },
+    {
+      name: "iNaturalist Sounds",
+      url: "https://www.inaturalist.org/",
+      access: "Public API",
+      owner: "iNaturalist",
+      figure: "230k+ audio files, 5,500+ species",
+      holds: ["multi-taxa"],
+      blurb: "Citizen-science multi-taxa audio, open archive."
+    },
+    {
+      name: "Earth Species Library",
+      url: "https://earthspecies.org/",
+      access: "Open dataset",
+      owner: "Earth Species Project",
+      figure: "Multi-modal ML datasets + BEANS benchmark",
+      holds: ["data"],
+      blurb: "Preprocessed bioacoustic datasets for machine learning."
+    },
+    {
+      name: "Project CETI",
+      url: "https://www.projectceti.org/",
+      access: "Open dataset",
+      owner: "Cetacean Translation Initiative",
+      figure: "Large-scale sperm whale acoustic + behavioral data",
+      holds: ["marine"],
+      blurb: "Decoding sperm whale communication; open research."
+    },
+    {
+      name: "Animal Sound Archive",
+      url: "https://www.museumfuernaturkunde.berlin/en/research/collection/animal-sound-archive",
+      access: "Browse / request",
+      owner: "Museum f\u00fcr Naturkunde Berlin",
+      figure: "120k+ recordings, ~1,800 bird + 580 mammal species",
+      holds: ["birds", "multi-taxa"],
+      blurb: "Third-largest bioacoustic collection worldwide."
+    },
+    {
+      name: "GBIF",
+      url: "https://www.gbif.org/",
+      access: "Public API",
+      owner: "Global Biodiversity Information Facility",
+      figure: "Billions of occurrence records",
+      holds: ["data"],
+      blurb: "Species occurrence & biodiversity data, with API."
+    }
+  ];
+
+  var grid = document.getElementById("arch-grid");
+  var countEl = document.getElementById("arch-count");
+  var emptyEl = document.getElementById("arch-empty");
+  var searchEl = document.getElementById("arch-search");
+  var clearBtn = document.getElementById("arch-clear");
+  var chips = Array.prototype.slice.call(document.querySelectorAll(".chip[data-filter]"));
+
+  var state = { query: "", holds: "all", access: "all" };
+
+  function render() {
+    var q = state.query.trim().toLowerCase();
+    var visible = ARCHIVES.filter(function (a) {
+      if (state.holds !== "all" && a.holds.indexOf(state.holds) === -1) return false;
+      if (state.access !== "all" && a.access !== state.access) return false;
+      if (q) {
+        var hay = (a.name + " " + a.owner + " " + a.blurb + " " + a.figure + " " + a.access).toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+
+    grid.innerHTML = "";
+    visible.forEach(function (a) {
+      var card = document.createElement("article");
+      card.className = "card";
+      var tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = a.access;
+      var h = document.createElement("h3");
+      var link = document.createElement("a");
+      link.href = a.url;
+      link.rel = "noopener";
+      link.textContent = a.name;
+      h.appendChild(link);
+      var fig = document.createElement("p");
+      fig.className = "figure";
+      fig.textContent = a.figure;
+      var blurb = document.createElement("p");
+      blurb.textContent = a.blurb;
+      var owner = document.createElement("p");
+      owner.className = "owner";
+      owner.textContent = a.owner;
+      var open = document.createElement("a");
+      open.className = "card-link";
+      open.href = a.url;
+      open.rel = "noopener";
+      open.textContent = "Open \u2197";
+      var note = document.createElement("span");
+      note.className = "ext-note";
+      note.textContent = "Public archive \u2014 linked, not owned by WAVE";
+      card.appendChild(tag);
+      card.appendChild(h);
+      card.appendChild(fig);
+      card.appendChild(blurb);
+      card.appendChild(owner);
+      card.appendChild(open);
+      card.appendChild(note);
+      grid.appendChild(card);
+    });
+
+    countEl.innerHTML = "";
+    var strong = document.createElement("strong");
+    strong.textContent = visible.length === ARCHIVES.length
+      ? "Showing all 8 public archives"
+      : "Showing " + visible.length + " of 8 public archives";
+    countEl.appendChild(strong);
+    emptyEl.hidden = visible.length !== 0;
+  }
+
+  function setFilter(filter, value, btn) {
+    state[filter] = value;
+    chips.forEach(function (c) {
+      if (c.getAttribute("data-filter") === filter) {
+        c.setAttribute("aria-pressed", c === btn ? "true" : "false");
+      }
+    });
+    render();
+  }
+
+  chips.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      setFilter(btn.getAttribute("data-filter"), btn.getAttribute("data-value"), btn);
+    });
+  });
+
+  searchEl.addEventListener("input", function () {
+    state.query = searchEl.value;
+    render();
+  });
+
+  searchEl.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      searchEl.value = "";
+      state.query = "";
+      render();
+      searchEl.focus();
+    }
+  });
+
+  function clearAll() {
+    state.query = "";
+    state.holds = "all";
+    state.access = "all";
+    searchEl.value = "";
+    chips.forEach(function (c) {
+      c.setAttribute("aria-pressed", c.getAttribute("data-value") === "all" ? "true" : "false");
+    });
+    render();
+    searchEl.focus();
+  }
+
+  clearBtn.addEventListener("click", clearAll);
+
+  render();
+})();
+</script>
+</body>
+</html>

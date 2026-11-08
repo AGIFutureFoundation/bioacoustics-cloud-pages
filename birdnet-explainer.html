@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How BirdNET works — WAVE</title>
+<meta name="description" content="A step-by-step explainer of how BirdNET, WAVE's live predictor, turns a field recording into a species match — with an honest status note.">
+<style>
+/* WAVE BirdNET explainer — staged component. Brand matches the staged WAVE homepage:
+   deep-ocean dark, cyan/teal accents, system font stack, zero external requests. */
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --bg:#05121a; --bg2:#071c26; --panel:#0c2836; --panel2:#04141c;
+  --border:#1c3f4e; --border2:#164a5c;
+  --ink:#eaf6f7; --muted:#a9c6cd; --dim:#8fa9b0;
+  --cyan:#22d3ee; --teal:#5eead4; --focus:#7dd3fc;
+  --radius:16px;
+}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:17px;line-height:1.6;overflow-x:hidden}
+a{color:var(--cyan)}
+a:hover{color:var(--teal)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:4px}
+.wave-birdnet{max-width:860px;margin:0 auto;padding:32px 24px 48px}
+.wave-birdnet h2{font-size:clamp(26px,4vw,36px);line-height:1.2;margin:0 0 12px;font-weight:800}
+.wave-birdnet .lede{color:var(--muted);font-size:18px;max-width:720px;margin:0 0 28px}
+.stat-band{display:flex;flex-wrap:wrap;gap:32px;margin:0 0 28px;padding:20px 24px;
+  background:var(--panel);border:1px solid var(--border);border-radius:var(--radius)}
+.stat-band div{display:flex;flex-direction:column;gap:2px}
+.stat-band strong{font-size:28px;font-weight:800;color:var(--ink)}
+.stat-band span{color:var(--muted);font-size:14px}
+.status-box{border:1px solid var(--border2);border-radius:var(--radius);background:var(--panel2);
+  padding:18px 22px;margin:0 0 28px;font-size:15px;line-height:1.6;color:#cfe3e7}
+.status-box p{margin:0 0 8px}
+.status-box p:last-child{margin:0}
+.status-box strong{color:var(--teal)}
+.status-box .not{color:#fca5a5}
+.status-box .not strong{color:#fca5a5}
+.stepper{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:28px}
+.step-dots{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 24px;padding:0;list-style:none}
+.step-dots li{flex:1 1 auto;min-width:0}
+.step-dot{
+  width:100%;min-height:48px;padding:10px 8px;border-radius:12px;cursor:pointer;
+  border:1px solid var(--border2);background:var(--panel2);color:var(--muted);
+  font:inherit;font-size:14px;font-weight:700;text-align:center}
+.step-dot:hover{border-color:var(--cyan);color:var(--ink)}
+.step-dot[aria-current="step"]{background:var(--cyan);border-color:var(--cyan);color:#022}
+.step-panel{min-height:220px}
+.step-panel .step-kicker{color:var(--cyan);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin:0 0 8px}
+.step-panel h3{margin:0 0 10px;font-size:24px;line-height:1.25}
+.step-panel p{color:var(--muted);margin:0 0 12px;max-width:640px}
+.step-panel p:last-child{margin-bottom:0}
+.step-panel .fact{color:var(--ink);font-weight:700}
+.step-nav{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 24px;
+  border-radius:999px;font-weight:700;font-size:16px;text-decoration:none;border:1px solid transparent;cursor:pointer}
+.btn-primary{background:linear-gradient(120deg,var(--cyan),#0ea5a4);color:#022}
+.btn-primary:hover{color:#022;filter:brightness(1.08)}
+.btn-primary:disabled{opacity:.45;cursor:default;filter:none}
+.btn-ghost{background:none;border-color:#1c5a6e;color:var(--ink)}
+.btn-ghost:hover{background:#0e3543;color:var(--ink)}
+.btn-ghost:disabled{opacity:.45;cursor:default}
+.spec-fig{margin:16px 0 4px;border:1px solid var(--border2);border-radius:12px;overflow:hidden}
+.spec-fig svg{display:block;width:100%;height:auto}
+.spec-fig figcaption{padding:10px 14px;font-size:13px;color:var(--dim);background:var(--panel2)}
+.footnote{color:var(--dim);font-size:14px;margin:24px 0 0;max-width:720px}
+.footnote a{color:var(--dim)}
+.more-links{margin:24px 0 0;display:flex;flex-wrap:wrap;gap:8px 24px;font-size:15px}
+.more-links a{min-height:44px;display:inline-flex;align-items:center}
+@media (max-width:680px){
+  .wave-birdnet{padding:24px 18px 40px}
+  body{font-size:16px}
+  .step-panel{min-height:0}
+  .step-dots li{flex:1 1 30%}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<section class="wave-birdnet" aria-labelledby="wave-birdnet-title">
+  <h2 id="wave-birdnet-title">How BirdNET works</h2>
+  <p class="lede">BirdNET is the model that powers species identification on WAVE today. Five steps take a field recording to a species match — no magic, no invented sentences.</p>
+
+  <div class="stat-band" aria-label="BirdNET at a glance">
+    <div><strong>over 11,000</strong><span>species in BirdNET&rsquo;s current platform figure</span></div>
+    <div><strong>3 seconds</strong><span>per analysis window, sampled at 48&nbsp;kHz</span></div>
+    <div><strong>1</strong><span>live predictor on WAVE today: BirdNET</span></div>
+  </div>
+
+  <div class="status-box" role="note" aria-label="Honest status">
+    <p><strong>Live today:</strong> BirdNET (Cornell Lab of Ornithology + Chemnitz University of Technology) powers species identification on WAVE.</p>
+    <p class="not"><strong>Not connected:</strong> Perch 2.0 and NatureLM are wired into the pipeline but do not power any prediction today.</p>
+    <p><strong>Open source:</strong> the public GitHub repo is a stub — the engine is not published there yet. Do not treat &ldquo;open source&rdquo; as a live fact until the code lands.</p>
+  </div>
+
+  <div class="stepper">
+    <ol class="step-dots" id="step-dots" aria-label="Steps">
+      <li><button type="button" class="step-dot" data-step="0" aria-current="step">1 · Record</button></li>
+      <li><button type="button" class="step-dot" data-step="1" aria-current="false">2 · Slice</button></li>
+      <li><button type="button" class="step-dot" data-step="2" aria-current="false">3 · Picture</button></li>
+      <li><button type="button" class="step-dot" data-step="3" aria-current="false">4 · Model</button></li>
+      <li><button type="button" class="step-dot" data-step="4" aria-current="false">5 · Match</button></li>
+    </ol>
+
+    <div class="step-panel" id="step-panel" tabindex="-1" aria-live="polite">
+      <p class="step-kicker" id="step-kicker">Step 1 of 5</p>
+      <h3 id="step-title"></h3>
+      <div id="step-body"></div>
+    </div>
+
+    <div class="step-nav">
+      <button type="button" class="btn btn-ghost" id="step-prev">← Previous step</button>
+      <button type="button" class="btn btn-primary" id="step-next">Next step →</button>
+    </div>
+  </div>
+
+  <p class="footnote">The production model v2.4 (March 2025) covers 6,522 bird species; the 11,000+ figure is BirdNET&rsquo;s current platform figure. Figures: <a href="https://birdnet.cornell.edu/" rel="noopener">birdnet.cornell.edu</a>.</p>
+
+  <p class="more-links">
+    <a href="/blog/birdnet-and-the-democratization-of-bioacoustics">BirdNET and the democratization of bioacoustics →</a>
+    <a href="/blog/what-a-spectrogram-really-shows">What a spectrogram really shows →</a>
+    <a href="/translate">Open the Translator →</a>
+  </p>
+</section>
+
+<script>
+(function () {
+  "use strict";
+
+  /* Step content. No fake identification results anywhere: step 5 describes
+     a ranked list with confidence scores in general terms only. */
+  var STEPS = [
+    {
+      title: "Record",
+      body: [
+        "A recording is captured in the field \u2014 a microphone, a phone, or a remote acoustic sensor. BirdNET works from ordinary audio; WAV gives the fullest acoustic profile, and other formats still cross-reference.",
+        "What goes in is sound. Nothing else: no species hint is required for the model to run, though one can help the Translator narrow the search."
+      ]
+    },
+    {
+      title: "Slice into 3-second windows at 48 kHz",
+      body: [
+        "The recording is cut into short, overlapping windows of 3 seconds each, sampled at 48 kHz \u2014 that is 48,000 samples per second, or 144,000 samples in one window.",
+        "Each 3-second window becomes one unit the model looks at. A longer recording simply produces more windows, and each one is scored on its own."
+      ]
+    },
+    {
+      title: "Turn each window into a spectrogram",
+      body: [
+        "Each window is turned into a spectrogram \u2014 a picture of sound, with time running left to right and frequency running bottom to top. Brightness shows how much energy sits at each frequency at each moment.",
+        "The model reads this picture, not the raw waveform. That is why spectrogram choices matter: the same sound can look different under different settings.",
+        "ILLUSTRATION \u2014 the image below is a drawn example of what a spectrogram looks like, not a real recording\u2019s spectrogram and not a BirdNET output."
+      ],
+      illustration: true
+    },
+    {
+      title: "The model scores the picture",
+      body: [
+        "BirdNET \u2014 a neural network trained on bird vocalisations by the Cornell Lab of Ornithology and Chemnitz University of Technology \u2014 scores each spectrogram against the species it knows.",
+        "The model does not \u201chear\u201d the way we do. It has learned which shapes in a spectrogram tend to belong to which species, from large collections of labelled recordings."
+      ]
+    },
+    {
+      title: "A ranked species match \u2014 with confidence, not certainty",
+      body: [
+        "The result is a ranked list of the most likely species, each with a confidence score. WAVE shows the ranking and the scores; it never invents a sentence or a meaning for the call.",
+        "Confidence is not certainty. Accuracy depends on the species, the recording quality, and how common the target is \u2014 a detector that is 99% accurate can still be wrong most of the time when the target is rare.",
+        "BirdNET is birds-first. For whale song and other taxa, WAVE cross-references public archives such as the Watkins Marine Mammal Sound Database instead \u2014 full model prediction for marine taxa waits on the GPU model connection."
+      ]
+    }
+  ];
+
+  var dots = Array.prototype.slice.call(document.querySelectorAll(".step-dot"));
+  var panel = document.getElementById("step-panel");
+  var kicker = document.getElementById("step-kicker");
+  var titleEl = document.getElementById("step-title");
+  var bodyEl = document.getElementById("step-body");
+  var prevBtn = document.getElementById("step-prev");
+  var nextBtn = document.getElementById("step-next");
+  var current = 0;
+
+  /* Illustrative spectrogram: an inline SVG drawing, clearly labelled as an
+     illustration. It is decorative; the panel text carries the meaning. */
+  var SPEC_SVG =
+    '<figure class="spec-fig" role="img" aria-label="Illustrative spectrogram drawing: a series of curved call shapes rising and falling across time and frequency.">' +
+    '<svg viewBox="0 0 600 180" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    '<rect width="600" height="180" fill="#04141c"/>' +
+    '<g fill="none" stroke-linecap="round">' +
+    '<path d="M20 150 Q 60 60 100 120 T 180 90" stroke="#22d3ee" stroke-width="5" opacity="0.9"/>' +
+    '<path d="M120 160 Q 160 40 200 110 T 280 70" stroke="#5eead4" stroke-width="5" opacity="0.8"/>' +
+    '<path d="M240 150 Q 280 80 320 130 T 400 90" stroke="#22d3ee" stroke-width="4" opacity="0.7"/>' +
+    '<path d="M360 160 Q 400 50 440 120 T 520 80" stroke="#5eead4" stroke-width="5" opacity="0.85"/>' +
+    '<path d="M470 150 Q 510 90 550 130" stroke="#22d3ee" stroke-width="4" opacity="0.6"/>' +
+    '<path d="M40 165 Q 90 120 140 150" stroke="#0ea5a4" stroke-width="3" opacity="0.5"/>' +
+    '<path d="M300 165 Q 350 130 390 155" stroke="#0ea5a4" stroke-width="3" opacity="0.5"/>' +
+    '</g>' +
+    '<g font-family="system-ui, sans-serif" font-size="11" fill="#8fa9b0">' +
+    '<text x="8" y="16">frequency \u2191</text>' +
+    '<text x="520" y="172">time \u2192</text>' +
+    '</g>' +
+    '</svg>' +
+    '<figcaption>Illustration \u2014 a drawn example of a spectrogram, not a real recording and not a BirdNET output.</figcaption>' +
+    '</figure>';
+
+  function showStep(n, moveFocus) {
+    current = Math.max(0, Math.min(STEPS.length - 1, n));
+    var step = STEPS[current];
+    kicker.textContent = "Step " + (current + 1) + " of " + STEPS.length;
+    titleEl.textContent = step.title;
+    bodyEl.innerHTML = "";
+    step.body.forEach(function (text) {
+      var p = document.createElement("p");
+      p.textContent = text;
+      bodyEl.appendChild(p);
+    });
+    if (step.illustration) {
+      var wrap = document.createElement("div");
+      wrap.innerHTML = SPEC_SVG;
+      bodyEl.appendChild(wrap.firstChild);
+    }
+    dots.forEach(function (dot, i) {
+      dot.setAttribute("aria-current", i === current ? "step" : "false");
+    });
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === STEPS.length - 1;
+    nextBtn.textContent = current === STEPS.length - 1 ? "Last step ✓" : "Next step →";
+    if (moveFocus) panel.focus();
+  }
+
+  dots.forEach(function (dot) {
+    dot.addEventListener("click", function () {
+      showStep(parseInt(dot.getAttribute("data-step"), 10), true);
+    });
+  });
+  prevBtn.addEventListener("click", function () { showStep(current - 1, true); });
+  nextBtn.addEventListener("click", function () { showStep(current + 1, true); });
+
+  panel.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowRight") { e.preventDefault(); showStep(current + 1, true); }
+    if (e.key === "ArrowLeft") { e.preventDefault(); showStep(current - 1, true); }
+    if (e.key === "Home") { e.preventDefault(); showStep(0, true); }
+    if (e.key === "End") { e.preventDefault(); showStep(STEPS.length - 1, true); }
+  });
+
+  showStep(0, false);
+})();
+</script>
+</body>
+</html>

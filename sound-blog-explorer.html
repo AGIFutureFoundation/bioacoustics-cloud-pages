@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Field notes &amp; videos — WAVE</title>
+<meta name="description" content="Search and browse WAVE's 28 field-note articles and 5 videos on bioacoustics, animal communication, and the science behind the platform.">
+<style>
+/* WAVE sound/blog explorer — staged component. Brand matches the staged WAVE homepage:
+   deep-ocean dark, cyan/teal accents, system font stack, zero external requests. */
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --bg:#05121a; --bg2:#071c26; --panel:#0c2836; --panel2:#04141c;
+  --border:#1c3f4e; --border2:#164a5c;
+  --ink:#eaf6f7; --muted:#a9c6cd; --dim:#8fa9b0;
+  --cyan:#22d3ee; --teal:#5eead4; --focus:#7dd3fc;
+  --radius:16px;
+}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:17px;line-height:1.6;overflow-x:hidden}
+a{color:var(--cyan)}
+a:hover{color:var(--teal)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:4px}
+.wave-explore{max-width:1140px;margin:0 auto;padding:32px 24px 48px}
+.wave-explore h2{font-size:clamp(26px,4vw,36px);line-height:1.2;margin:0 0 12px;font-weight:800}
+.wave-explore .lede{color:var(--muted);font-size:18px;max-width:720px;margin:0 0 28px}
+.controls{display:flex;flex-direction:column;gap:16px;margin-bottom:24px}
+.search-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.search-row label{font-weight:700}
+.search-row input[type="search"]{
+  flex:1 1 280px;min-height:48px;padding:12px 16px;border-radius:999px;
+  border:1px solid var(--border2);background:var(--panel2);color:var(--ink);
+  font:inherit;font-size:16px}
+.search-row input[type="search"]::placeholder{color:var(--dim)}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip-row .chip-label{font-size:14px;font-weight:700;color:var(--muted);margin-right:4px}
+.chip{
+  min-height:44px;padding:10px 16px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--border2);background:var(--panel);color:var(--ink);
+  font:inherit;font-size:15px}
+.chip:hover{border-color:var(--cyan)}
+.chip[aria-pressed="true"]{background:var(--cyan);border-color:var(--cyan);color:#022;font-weight:700}
+.chip:disabled{opacity:.4;cursor:default}
+.result-count{color:var(--muted);font-size:15px;margin:0 0 20px}
+.result-count strong{color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card h3{margin:0;font-size:19px;line-height:1.3}
+.card h3 a{color:var(--ink);text-decoration:none}
+.card h3 a:hover{color:var(--cyan);text-decoration:underline}
+.card p{margin:0;color:var(--muted);font-size:15px}
+.card .tag{color:var(--cyan);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.card .meta{color:var(--dim);font-size:13px}
+.card .card-link{margin-top:auto;padding-top:8px;font-weight:700;font-size:15px;min-height:44px;display:inline-flex;align-items:center}
+.empty{border:1px dashed var(--border2);border-radius:var(--radius);padding:32px;text-align:center;color:var(--muted)}
+.empty[hidden]{display:none}
+.empty .btn-clear{
+  margin-top:16px;min-height:48px;padding:12px 24px;border-radius:999px;cursor:pointer;
+  background:linear-gradient(120deg,var(--cyan),#0ea5a4);color:#022;font-weight:700;font-size:16px;border:0}
+.data-note{border-left:3px solid var(--cyan);background:rgba(34,211,238,.07);border-radius:10px;
+  padding:14px 18px;color:#cfe3e7;font-size:15px;line-height:1.6;margin-top:28px;max-width:820px}
+.data-note p{margin:0}
+@media (max-width:1020px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:680px){
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .wave-explore{padding:24px 18px 40px}
+  body{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.card img{width:100%;height:auto;border-radius:8px;display:block}
+</style>
+</head>
+<body>
+<section class="wave-explore" aria-labelledby="wave-explore-title">
+  <h2 id="wave-explore-title">Field notes &amp; videos</h2>
+  <p class="lede">28 field-note articles and 5 videos from the live WAVE site — plain-language writing on bioacoustics, the models, and the animals. Search by topic, or filter by type and category.</p>
+
+  <div class="controls">
+    <div class="search-row">
+      <label for="ex-search">Search</label>
+      <input type="search" id="ex-search" placeholder="Try “whale”, “spectrogram”, or “ethics”…" autocomplete="off" aria-describedby="ex-count">
+    </div>
+    <div class="chip-row" role="group" aria-label="Filter by type">
+      <span class="chip-label">Type:</span>
+      <button type="button" class="chip" data-filter="type" data-value="all" aria-pressed="true">All</button>
+      <button type="button" class="chip" data-filter="type" data-value="article" aria-pressed="false">Articles (28)</button>
+      <button type="button" class="chip" data-filter="type" data-value="video" aria-pressed="false">Videos (5)</button>
+    </div>
+    <div class="chip-row" role="group" aria-label="Filter articles by category">
+      <span class="chip-label">Category:</span>
+      <button type="button" class="chip cat-chip" data-filter="category" data-value="all" aria-pressed="true">All</button>
+      <button type="button" class="chip cat-chip" data-filter="category" data-value="Ecosystem" aria-pressed="false">Ecosystem</button>
+      <button type="button" class="chip cat-chip" data-filter="category" data-value="Perspective" aria-pressed="false">Perspective</button>
+      <button type="button" class="chip cat-chip" data-filter="category" data-value="Research" aria-pressed="false">Research</button>
+      <button type="button" class="chip cat-chip" data-filter="category" data-value="Technology" aria-pressed="false">Technology</button>
+      <button type="button" class="chip cat-chip" data-filter="category" data-value="Field notes" aria-pressed="false">Field notes</button>
+    </div>
+  </div>
+
+  <p class="result-count" id="ex-count" role="status" aria-live="polite"></p>
+
+  <div class="grid" id="ex-grid"></div>
+
+  <div class="empty" id="ex-empty" hidden>
+    <p><strong>Nothing matches that search.</strong><br>Try a different word, or clear the filters to see all 28 articles and 5 videos.</p>
+    <button type="button" class="btn-clear" id="ex-clear">Clear search and filters</button>
+  </div>
+
+  <div class="data-note">
+    <p><strong>About this list:</strong> every item above is a real article or video from the live WAVE site. Three long reads (reef soundscapes, the forest&rsquo;s alarm system, the frog chorus census) were published 2026-11-07 and are included above.</p>
+  </div>
+</section>
+
+<script>
+(function () {
+  "use strict";
+
+  /* Data: the 28 live blog articles (titles, categories, read times and
+     excerpts exactly as published on the WAVE blog index) and the 5 videos
+     from the live site. Links point at the live site; on integration they
+     become relative links (/blog/&hellip;, /videos/&hellip;). */
+  var SITE = "";
+
+  var ITEMS = [
+    { type: "article", category: "Ecosystem", mins: 9, slug: "acoustic-monitoring-and-the-future-of-protected-areas",
+      title: "Acoustic monitoring and the future of protected areas",
+      excerpt: "A protected area is only as good as our ability to know what's happening inside it. Continuous listening is quietly becoming one of the most powerful tools for managing and defending the world's wild places." },
+    { type: "article", category: "Perspective", mins: 9, slug: "a-short-history-of-listening-to-animals",
+      title: "A short history of listening to animals",
+      excerpt: "From wax cylinders to foundation models, the story of how humans learned to record, visualize, and finally analyze animal sound at scale \u2014 and why each leap changed what questions we could even ask." },
+    { type: "article", category: "Perspective", mins: 9, slug: "do-animals-have-names-signature-calls-and-individual-identity",
+      title: "Do animals have names? Signature calls and the puzzle of individual identity",
+      excerpt: "Some dolphins seem to have signature whistles that work a bit like names. It's one of the most tantalizing findings in animal communication \u2014 and a perfect case study in how to be excited without overclaiming." },
+    { type: "article", category: "Ecosystem", mins: 9, slug: "the-vanishing-chorus-insects-and-the-quiet-crisis",
+      title: "The vanishing chorus: insects and the quiet crisis we can hear",
+      excerpt: "Insects are the backbone of terrestrial soundscapes and the base of countless food webs. As their numbers fall, the world is getting quieter \u2014 and acoustic monitoring may be one of our best ways to measure the loss." },
+    { type: "article", category: "Research", mins: 9, slug: "the-base-rate-problem-why-rare-species-fool-detectors",
+      title: "The base-rate problem: why rare species fool even good detectors",
+      excerpt: "A detector that's 99% accurate can still be wrong most of the time when the target is rare. This counterintuitive math is one of the most important \u2014 and most ignored \u2014 ideas in acoustic monitoring." },
+    { type: "article", category: "Technology", mins: 9, slug: "the-hydrophone-the-instrument-that-opened-the-ocean",
+      title: "The hydrophone: the humble instrument that opened the ocean",
+      excerpt: "Before you can analyze a whale's voice, something has to hear it underwater. The hydrophone is the unglamorous device that made marine bioacoustics possible \u2014 and its quirks shape everything downstream." },
+    { type: "article", category: "Research", mins: 10, slug: "bats-and-the-ultrasonic-frontier",
+      title: "Bats and the ultrasonic frontier: listening above the ceiling of human hearing",
+      excerpt: "If elephants speak below our hearing, bats scream above it. Their ultrasonic world is a masterclass in biological sonar \u2014 and a very different challenge for anyone trying to record and classify it." },
+    { type: "article", category: "Research", mins: 10, slug: "the-infrasonic-world-of-elephants",
+      title: "The infrasonic world of elephants: communication below human hearing",
+      excerpt: "Elephants hold conversations in frequencies we can't hear, across distances we can barely imagine. Their infrasonic calls reveal a hidden channel of the natural world \u2014 and a hard test for our instruments." },
+    { type: "article", category: "Field notes", mins: 9, slug: "from-recording-to-insight-a-fieldworkers-workflow",
+      title: "From recording to insight: a fieldworker's end-to-end workflow",
+      excerpt: "A practical walk through how a modern acoustic study actually runs \u2014 from planning a deployment to a defensible finding \u2014 and where an honest AI toolkit fits at each step." },
+    { type: "article", category: "Ecosystem", mins: 9, slug: "soundscape-ecology-reading-a-whole-habitat",
+      title: "Soundscape ecology: reading the health of a whole habitat by ear",
+      excerpt: "Stop listening for one species and start listening to the entire chorus. The collective sound of a place turns out to be a remarkably rich indicator of ecosystem health." },
+    { type: "article", category: "Perspective", mins: 9, slug: "the-ethics-of-listening-to-wild-animals",
+      title: "The ethics of listening to wild animals",
+      excerpt: "Recording nature seems harmless \u2014 you're only listening. But acoustic monitoring raises real questions about disturbance, surveillance, data ownership, and what we owe the animals we study." },
+    { type: "article", category: "Research", mins: 10, slug: "foundation-models-for-nature",
+      title: "Foundation models for nature: what NatureLM and Perch really promise",
+      excerpt: "The same idea that made ChatGPT possible is arriving in bioacoustics. Here's what a 'foundation model' for animal sound actually is, why it's a genuine leap, and where the hype outruns the science." },
+    { type: "article", category: "Technology", mins: 9, slug: "how-a-species-classifier-is-trained",
+      title: "How a species classifier is actually trained",
+      excerpt: "Behind every one-click species prediction is a long, unglamorous pipeline of data, labels, and hard choices. Understanding it tells you exactly how much to trust the answer." },
+    { type: "article", category: "Perspective", mins: 9, slug: "dialects-culture-and-the-question-of-animal-tradition",
+      title: "Dialects, culture, and the question of animal tradition",
+      excerpt: "When whales in different oceans sing different songs, and those songs change over time, we're looking at something that behaves a lot like culture. What does that mean \u2014 and how do we study it without overclaiming?" },
+    { type: "article", category: "Research", mins: 9, slug: "the-cocktail-party-problem-underwater",
+      title: "The cocktail party problem, underwater",
+      excerpt: "Your brain effortlessly follows one voice in a crowded room. Doing the same for a whale in a noisy ocean is one of the hardest and most important problems in bioacoustics." },
+    { type: "article", category: "Technology", mins: 8, slug: "birdnet-and-the-democratization-of-bioacoustics",
+      title: "BirdNET and the democratization of bioacoustics",
+      excerpt: "A free model that identifies thousands of bird species from sound turned a specialist craft into something a schoolteacher, a birder, or a park ranger can do. Here's how it happened \u2014 and what it means." },
+    { type: "article", category: "Field notes", mins: 8, slug: "passive-acoustic-monitoring-explained",
+      title: "Passive acoustic monitoring: the quiet revolution in how we count wildlife",
+      excerpt: "You can't see most animals most of the time. You can hear them. Passive acoustic monitoring turns that fact into one of the most powerful survey tools conservation has ever had." },
+    { type: "article", category: "Technology", mins: 8, slug: "what-a-spectrogram-really-shows",
+      title: "What a spectrogram really shows (and what it hides)",
+      excerpt: "A spectrogram looks like an objective picture of sound. It isn't \u2014 it's a set of choices. Understanding those choices is the difference between reading a signal and fooling yourself." },
+    { type: "article", category: "Perspective", mins: 6, slug: "can-we-really-translate-animals",
+      title: "Can we really translate animals? An honest status report",
+      excerpt: "The hype says we're about to chat with dolphins. The science says something more interesting \u2014 and more useful. Where the field actually stands." },
+    { type: "article", category: "Technology", mins: 6, slug: "how-wave-decodes-animal-communication",
+      title: "How WAVE decodes animal communication",
+      excerpt: "From a hydrophone in the deep ocean to a structured, searchable vocal repertoire \u2014 a plain-language tour of the Technical Triad behind WAVE." },
+    { type: "article", category: "Research", mins: 5, slug: "sound-as-shape-geometry-of-communication",
+      title: "Sound as shape: the geometry of animal communication",
+      excerpt: "Why the most useful way to think about a whale song or bird call isn't as audio at all \u2014 but as a point in high-dimensional space." },
+    { type: "article", category: "Field notes", mins: 5, slug: "listening-to-the-ocean",
+      title: "Listening to the ocean: bioacoustics underwater",
+      excerpt: "Marine soundscapes are among the hardest and most rewarding places to listen. How WAVE separates signal from an ocean of noise." },
+    { type: "article", category: "Ecosystem", mins: 7, slug: "the-data-landscape-of-animal-translation",
+      title: "The data landscape of animal translation",
+      excerpt: "No single dataset decodes a species. A tour of the validated projects and archives WAVE connects \u2014 and why breadth beats any one source." },
+    { type: "article", category: "Research", mins: 5, slug: "dialects-in-the-wild",
+      title: "Dialects in the wild: when animals of the same species don't sound alike",
+      excerpt: "Populations of the same species can develop distinct vocal dialects. Detecting them is one of bioacoustics' most practical superpowers." },
+    { type: "article", category: "Technology", mins: 5, slug: "edge-ai-in-the-field",
+      title: "Edge AI in the field: listening where the cloud can't reach",
+      excerpt: "The most important bioacoustic computing doesn't happen in a data center. It happens on a sensor in the middle of nowhere." },
+    { type: "video", mins: 8, file: "translating-ocean-voices.mp4",
+      title: "Translating Ocean Voices",
+      excerpt: "How WAVE extracts meaning from marine soundscapes \u2014 separating whale song from ocean noise and mapping it to behavior." },
+    { type: "video", mins: 7, file: "unlocking-the-oceans-secrets.mp4",
+      title: "Unlocking the Ocean\u2019s Secrets",
+      excerpt: "A field-to-model look at underwater bioacoustics: hydrophones, edge AI, and real-time species presence across marine environments." },
+    { type: "video", mins: 5, file: "sound-as-shape.mp4",
+      title: "Sound as Shape: The High-Dimensional Geometry of Animal Communication",
+      excerpt: "Why animal vocalizations are best understood as geometry \u2014 embedding calls into high-dimensional space to reveal structure across species." },
+    { type: "video", mins: 6, file: "decoding-the-umwelt.mp4",
+      title: "Decoding the Umwelt: Engineering the Wild Animal Voice Engine",
+      excerpt: "The engineering behind WAVE \u2014 the Technical Triad of bio-logging sensors, the Superlet Transform, and foundation models working together." },
+    { type: "video", mins: null, file: "wave-explainer.mp4",
+      title: "WAVE overview",
+      excerpt: "The short introduction to the platform.",
+      rootFile: true },
+    { type: "article", category: "Ecosystem", mins: 26, slug: "reef-soundscapes",
+      title: "The Reef Is Talking. Are We Listening?",
+      excerpt: "What coral reef soundscapes reveal about reef health — and whether playing healthy sounds can help bring the fish back", webp: true },
+    { type: "article", category: "Technology", mins: 27, slug: "forest-alarm-system",
+      title: "The Forest Has an Alarm System",
+      excerpt: "How listening for chainsaws and gunshots is changing the fight against illegal logging and poaching — and where it still falls short", webp: true },
+    { type: "article", category: "Research", mins: 27, slug: "frog-chorus-census",
+      title: "After Dark, the Frogs Take the Census",
+      excerpt: "Amphibian choruses, citizen science, and the most threatened vertebrates on Earth", webp: true },
+  ];
+
+  var grid = document.getElementById("ex-grid");
+  var countEl = document.getElementById("ex-count");
+  var emptyEl = document.getElementById("ex-empty");
+  var searchEl = document.getElementById("ex-search");
+  var clearBtn = document.getElementById("ex-clear");
+  var chips = Array.prototype.slice.call(document.querySelectorAll(".chip[data-filter]"));
+  var catChips = Array.prototype.slice.call(document.querySelectorAll(".cat-chip"));
+
+  var state = { query: "", type: "all", category: "all" };
+  var TOTAL = ITEMS.length;
+
+  function itemUrl(item) {
+    if (item.type === "article") return SITE + "/blog/" + item.slug;
+    if (item.rootFile) return SITE + "/" + item.file;
+    return SITE + "/videos/" + item.file;
+  }
+
+  function render() {
+    var q = state.query.trim().toLowerCase();
+    var visible = ITEMS.filter(function (item) {
+      if (state.type !== "all" && item.type !== state.type) return false;
+      if (state.type === "video") {
+        /* Category chips only apply to articles. */
+      } else if (state.category !== "all") {
+        if (item.type !== "article" || item.category !== state.category) return false;
+      }
+      if (q) {
+        var hay = (item.title + " " + item.excerpt + " " + (item.category || "")).toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+
+    grid.innerHTML = "";
+    visible.forEach(function (item) {
+      var card = document.createElement("article");
+      card.className = "card";
+      var thumb = document.createElement("img");
+      if (item.type === "article") { thumb.src = "/blog-images/" + item.slug + (item.webp ? ".webp" : ".jpg"); }
+      else if (item.rootFile) { thumb.src = "/wave-poster.jpg"; }
+      else { thumb.src = "/videos/" + item.file.replace(/\.mp4$/, ".jpg"); }
+      thumb.alt = "";
+      thumb.loading = "lazy";
+      card.appendChild(thumb);
+      var tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = item.type === "article" ? item.category : "Video";
+      var h = document.createElement("h3");
+      var link = document.createElement("a");
+      link.href = itemUrl(item);
+      link.textContent = item.title;
+      h.appendChild(link);
+      var meta = document.createElement("p");
+      meta.className = "meta";
+      meta.textContent = item.type === "article"
+        ? item.mins + " min read"
+        : (item.mins ? "~" + item.mins + " min" : "Short introduction");
+      var ex = document.createElement("p");
+      ex.textContent = item.excerpt;
+      var open = document.createElement("a");
+      open.className = "card-link";
+      open.href = itemUrl(item);
+      open.textContent = item.type === "article" ? "Read article \u2192" : "Watch video \u2192";
+      card.appendChild(tag);
+      card.appendChild(h);
+      card.appendChild(meta);
+      card.appendChild(ex);
+      card.appendChild(open);
+      grid.appendChild(card);
+    });
+
+    countEl.innerHTML = "";
+    var strong = document.createElement("strong");
+    strong.textContent = visible.length === TOTAL
+      ? "Showing all 28 articles and 5 videos"
+      : "Showing " + visible.length + " of 33 items (28 articles, 5 videos)";
+    countEl.appendChild(strong);
+    emptyEl.hidden = visible.length !== 0;
+  }
+
+  function setFilter(filter, value, btn) {
+    state[filter] = value;
+    chips.forEach(function (c) {
+      if (c.getAttribute("data-filter") === filter) {
+        c.setAttribute("aria-pressed", c === btn ? "true" : "false");
+      }
+    });
+    /* Category chips only filter articles; disable them while Videos is chosen. */
+    var videosOnly = state.type === "video";
+    catChips.forEach(function (c) { c.disabled = videosOnly; });
+    render();
+  }
+
+  chips.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      setFilter(btn.getAttribute("data-filter"), btn.getAttribute("data-value"), btn);
+    });
+  });
+
+  searchEl.addEventListener("input", function () {
+    state.query = searchEl.value;
+    render();
+  });
+
+  searchEl.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      searchEl.value = "";
+      state.query = "";
+      render();
+      searchEl.focus();
+    }
+  });
+
+  function clearAll() {
+    state.query = "";
+    state.type = "all";
+    state.category = "all";
+    searchEl.value = "";
+    chips.forEach(function (c) {
+      c.setAttribute("aria-pressed", c.getAttribute("data-value") === "all" ? "true" : "false");
+      c.disabled = false;
+    });
+    render();
+    searchEl.focus();
+  }
+
+  clearBtn.addEventListener("click", clearAll);
+
+  render();
+})();
+</script>
+</body>
+</html>
